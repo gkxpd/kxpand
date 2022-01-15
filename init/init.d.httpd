@@ -1,0 +1,77 @@
+#!/bin/sh
+# Startup script for the Apache Web Server
+# chkconfig: 345 85 15
+# Description: Startup script for Apache webserver on Debian. Place in /etc/init.d and
+# run 'update-rc.d -f httpd defaults', or use the appropriate command on your
+# distro. For CentOS/Redhat run: 'chkconfig --add httpd'
+
+### BEGIN INIT INFO
+# Provides:          httpd
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts Apache Web Server
+# Description:       starts Apache Web Server
+### END INIT INFO
+
+ARGV="$@"
+APACHE_PATH='/www/server/apache'
+HTTPD="$APACHE_PATH/bin/httpd"
+PID="$APACHE_PATH/logs/httpd.pid"
+#
+# pick up any necessary environment variables
+if test -f /www/server/apache/bin/envvars; then
+  . /www/server/apache/bin/envvars
+fi
+
+ULIMIT_MAX_FILES="ulimit -S -n `ulimit -H -n`"
+# --------------------                              --------------------
+# ||||||||||||||||||||   END CONFIGURATION SECTION  ||||||||||||||||||||
+
+# Set the maximum number of file descriptors allowed per child process.
+if [ "x$ULIMIT_MAX_FILES" != "x" ] ; then
+    $ULIMIT_MAX_FILES
+fi
+
+ERROR=0
+if [ "x$ARGV" = "x" ] ; then 
+    ARGV="-h"
+fi
+
+case $ARGV in
+    start|stop|restart|graceful|graceful-stop)
+        echo -n "$ARGV apache... "
+        $HTTPD -k $ARGV
+        if [ "$?" != 0 ] ; then
+            echo " failed"
+        else
+            echo " done"
+        fi
+        ;;
+    configtest)
+        echo -n "test apache configure... "
+        $HTTPD -t
+        if [ "$?" != 0 ] ; then
+            echo " failed"
+        else
+            echo " done"
+        fi
+        ;;
+    reload)
+        echo -n "reload apache... "
+        $APACHE_PATH/bin/apachectl graceful
+	echo " done"
+        ;;
+    status)
+        if [ -f "$PID" ]; then  
+            echo "Apache is running."
+        else
+            echo "Apache is stopped."
+        fi 
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart|graceful|graceful-stop|configtest|status}"
+        ;;
+esac
+

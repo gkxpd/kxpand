@@ -1,0 +1,94 @@
+#!/bin/sh
+# chkconfig: 2345 56 26
+# description: Redis Service
+
+### BEGIN INIT INFO
+# Provides:          Redis
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts Redis
+# Description:       starts the BT-Web
+### END INIT INFO
+
+# Simple Redis init.d script conceived to work on Linux systems
+# as it does use of the /proc filesystem.
+#pkill -9 redis-server
+ulimit -n 10240
+CONF="/www/server/redis/redis.conf"
+REDIS_PORT=$(cat $CONF |grep port|grep -v '#'|awk '{print $2}')
+REDIS_PASS=$(cat $CONF |grep requirepass|grep -v '#'|awk '{print $2}')
+REDIS_HOST=$(cat $CONF |grep bind|grep -v '#'|awk '{print $2}')
+if [ "$REDIS_PASS" != "" ];then
+	REDIS_PASS=" -a $REDIS_PASS"
+fi
+if [ -f "/www/server/redis/start.pl" ];then
+	STAR_PORT=$(cat /www/server/redis/start.pl)
+else
+	STAR_PORT="6379"
+fi
+EXEC=/www/server/redis/src/redis-server
+CLIEXEC="/www/server/redis/src/redis-cli -h ${REDIS_HOST} -p ${STAR_PORT}${REDIS_PASS}"
+PIDFILE=/www/server/redis/redis.pid
+
+redis_start(){
+	if [ -f "/www/server/redis/redis.pid" ]; then
+		ps -p $(cat ${PIDFILE}) > /dev/null 2>&1
+		if [ $? -ne "0" ]; then
+			rm -f ${PIDFILE}
+		else
+			echo "redis is running! ($(cat ${PIDFILE}))"
+			exit 0
+		fi
+	fi
+	echo "Starting redis server..."
+	sudo -u redis $EXEC $CONF
+	echo ${REDIS_PORT} > /www/server/redis/start.pl
+	echo "Starting redis success!"
+}
+redis_status(){
+	if [ -f "/www/server/redis/redis.pid" ]; then
+		ps -p $(cat ${PIDFILE}) > /dev/null 2>&1
+		if [ $? -ne "0" ]; then
+			echo "Redis is not running, buy pid file is exits ${PIDFILE}"
+			exit 1
+		else
+			echo "redis is running! ($(cat ${PIDFILE}))"
+			exit 0
+		fi
+	else
+		echo "redis is stopped"
+		exit 0
+	fi
+}
+redis_stop(){
+	echo "Stopping ..."
+	$CLIEXEC shutdown
+	sleep 1
+	if [ -f "/www/server/redis/redis.pid" ];then
+		kill -9 $(cat /www/server/redis/redis.pid)
+	fi
+	rm -f ${PIDFILE}
+	echo "Redis stopped"
+}
+
+case "$1" in
+	start)
+		redis_start
+		;;
+	stop)
+		redis_stop
+		;;
+	status)
+		redis_status
+		;;
+	restart|reload)
+		redis_stop
+		sleep 0.3
+		redis_start
+		;;
+	*)
+		echo "Please use start or stop as first argument"
+		;;
+esac
