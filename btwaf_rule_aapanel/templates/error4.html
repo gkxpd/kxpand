@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="main-content pb55" style="min-height: 525px;">
+    <div class="container-fluid">
+        <div class="site_table_view bgw mtb15 pd15">
+            <div style="padding: 40px;background: #f8f8f8;vertical-align: middle;">
+                <div style="">
+                <h1 style="font-size: 37px;">抱歉，当前Nginx 版本不兼容防火墙。</h1>
+                <p style="margin: 40px 0px 10px 0px;font-size: 20px;">解决方案:</p>
+                <div style="font-size: 15px;margin-left: 2px;">  <p style="margin: 10px 0px;">1.更换Nginx 版本
+                    操作如下：
+    打开软件商店-->Nginx-->切换版本-->Nginx1.19 ---><a href="/soft" class="btlink"> &gt;点击切换</a></p>
+                    <p>2.卸载重新安装Nginx防火墙</p>
+                    <p style="color:red;margin:10px 0px">3.更换Nginx时,网站会暂时无法打开,切换完成后即可打开。</p>
+                </div>
+                <p style="font-size: 20px;margin-top: 40px;color: red;">请使用编译安装的Nginx1.18、Nginx1.19、Nginx1.17。如果更改。教程--><a href="https://www.bt.cn/bbs/thread-67498-1-1.html" target="_blank" class="btlink"> &gt;查看教程</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+{% endblock %}

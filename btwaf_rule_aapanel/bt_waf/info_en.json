@@ -1,0 +1,15 @@
+{
+	"title":"Nginx WAF",
+	"tip":"lib",
+	"name":"btwaf",
+	"type":"plugin",
+	"ps":"Effectively prevent common penetration attacks such as sql injection/xss/one-sentence Trojan horse, it is recommended to use Nginx 1.18 and above",
+	"versions":"8.8.1",
+	"shell":"btwaf.sh",
+	"checks":"/www/server/panel/plugin/btwaf",
+	"author":"official",
+	"home":"https://forum.aapanel.com",
+	"date":"2019-08-21",
+	"default":false,
+	"display":0
+}

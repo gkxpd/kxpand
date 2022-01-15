@@ -1,0 +1,446 @@
+{% extends "layout.html" %}
+
+{% block content %}
+		<style>
+			
+        </style>
+        <link href="/btwaf/static/css/btwaf.css?version={{g['btwaf_version']}}" rel="stylesheet" />
+        <link href="/btwaf/static/css/world.css?version={{g['btwaf_version']}}" rel="stylesheet" />
+        <link href="/static/laydate/theme/default/laydate.css?version={{g['btwaf_version']}}" rel="stylesheet" />
+		<div class="main-content ng-waf-main" style="padding-bottom:53px">
+			<div class="server  mtb15 ng-waf-box">
+				<div class="title bgw c6 f16 plr15  ng-waf-header" style="min-width:900px">
+					<span class="c6 f16 pull-left ng-waf-title" data-type='home'>概览</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='ng_waf_map'>攻击地图</span>	
+					<span class="c6 f16 pull-left ng-waf-title" data-type='ng_waf_data_report'>攻击报表</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='overall'>全局设置</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='site'>站点设置</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='webshell'>木马查杀</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='history'>封锁记录</span>
+					<span class="c6 f16 pull-left ng-waf-title" data-type='logs'>操作日志</span>
+				</div>
+				<div class="server-circle ng-margin ng-item">
+				</div>
+			</div>
+		</div>
+		<script type="text/html" id="home">
+			<div class="server br2 ng-waf-details" data-type="home">
+				<div class="ng-waf-information">
+					<span>总拦截</span><span class="all_intercept">0</span>
+				</div>
+				<div class="ng-waf-information ">
+					<span>24小时拦截</span><span class="day_intercept">0</span>
+				</div>
+				<div class="ng-waf-logo">
+					<div class="logo_mask"></div>
+					<div class="ng-logo"></div>
+				</div>
+				<div class="ng-waf-information">
+					<span>CC拦截</span><span class="cc_defense">0</span>
+				</div>
+				<div class="ng-waf-information">
+					<span>保护天数</span><span class="protect_day">0</span>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 ng-waf-content">
+				<div class="pr8">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">封锁IP列表</div>
+						<div class="ng-waf-info"  style="height: 305px;">
+							<div class="info-data day-block-ip">
+								<span>24小时ip封锁数</span><span>0</span>
+							</div>
+							<div class="info-data blocking-ip">
+								<span>正在封锁的IP</span><span>0</span>
+							</div>
+					        <div class="divtable ng-table ng-fixed" style="padding:0px 25px 0px 20px;margin-right:8px">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th width="25%">开始时间</th>
+											<th width="15%">IP</th>
+											<th width="15%">站点</th>
+											<th width="15%">状态</th>
+											<th width="20%">封锁时间</th>
+											<th style="text-align:right" width="10%">操作</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<div class="divtable ng-table ng-ip-table" style="height: 183px;padding:0px 20px 0px 20px">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th width="25%">开始时间</th>
+											<th width="15%">IP</th>
+											<th width="15%">站点</th>
+											<th width="15%">状态</th>
+											<th width="20%">封锁时间</th>
+											<th style="text-align:right" width="10%">操作</th>
+										</tr>
+									</thead>
+									<tbody id='blockTableBody'>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 ng-waf-content">
+				<div class="bgw ng-border" style="margin-left:7px">
+					<div class="title c6 f13 plr15 ng-map-title">攻击地图
+					    <div class="ng-maximize" data-type="ng_waf_map">
+					        <div class='ng-pic'></div>
+					        <p>地图详情</p>
+					    </div>
+					</div>
+					<div class="district-legend">低
+							<span style="background:#EBF3FC"></span>
+							<span style="background:#92BDEE"></span>
+							<span style="background:#3887E0"></span>
+							高
+					</div>
+					<div class="ng-waf-info" style="height: 305px;">
+						<div class="ng-waf-map col-sm-9 " style="height: 300px;" id="ng-world"></div>
+						<div class="col-sm-3 ng-ip-list"  style="height: 300px;">
+							<div class="title c6 f13" style="border-bottom: 0;height:38px;margin-bottom:10px">攻击IP排行榜</div>
+							<div class="ng-attack-list" style="width:100%">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-4 ng-waf-content">
+				<div class="pr8">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">7天拦截趋势图</div>
+						<div class="ng-waf-info ng-tendency" id="ng-tendency" >	
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-4 ng-waf-content">
+				<div class="pr8" style="margin-left: 7px;">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">今日网站拦截TOP5</div>
+						<div class="ng-waf-info" style="padding:10px 0px">
+						    <div class="divtable ng-table ng-fixed" style="margin: 0px 8px 0px 6px;">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th width="70%">网站</th>
+											<th width="30%">拦截次数</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+							<div class="divtable ng-table ng-ranking-table" style="height: 250px;">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th width="70%">网站</th>
+											<th width="30%">拦截次数</th>
+											<!--<th style="text-align:right" width="30%">操作</th>  -->
+										</tr>
+									</thead>
+									<tbody id="rankTableBody">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-4 ng-waf-content" id="waf_ranking">
+				<div class="bgw ng-border" style="margin-left: 7px;">
+					<div class="title c6 f13 plr15">防御动态</div>
+					<div class="ng-waf-info" style="padding:10px 0px">
+					    <div class="divtable ng-table ng-fixed" style="margin:0px 6px 0px 8px">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th width="20%">时间</th>
+										<th width="72%">内容</th>
+										<th style="text-align:right" width="8%">操作</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+						<div class="divtable ng-table ng-ranking-table" style="height: 250px;">
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th width="20%">时间</th>
+										<th width="72%">内容</th>
+										<th style="text-align:right" width="8%">操作</th>
+									</tr>
+								</thead>
+								<tbody id="dynamicTableBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="overall">
+			<div class="ng-item-box col-md-12" data-type="overall">
+			   	<div class="waf_head_view" style="margin: 10px 0px 10px 5px;">
+    				<span class="pull-left" style="font-weight: 400;font-size: 15px;margin-right: 10px;margin-top: 10px;">防火墙开关</span>
+    				<button class="btn btn-success btn-sm waf_all_text pull-right">模拟攻击</button>
+    				<div class="waf-switch pull-left" style="margin-top: 10px;">
+                        <input class="btswitch btswitch-ios" id="waf_swicth_all" type="checkbox">
+                        <label class="btswitch-btn" for="waf_swicth_all" onclick="bt_waf.waf_switch()" style="font-size:12px"></label>
+    				</div>
+    			</div>
+				<div class="divtable waf-table" id="overall_table" style="height:800px;margin: 0px 0px 15px 0px;border-top:1px solid #f1f1f1;"></div>
+				<div class="ng-waf-line">
+					<button class="btn btn-default btn-sm pull-left import_waf_config">导出配置</button>
+					<button class="btn btn-default btn-sm pull-left export_waf_config" style= "margin-left: 10px;">导入配置</button>
+					<button class="btn btn-default btn-sm pull-right set_default_settings">恢复默认配置</button>
+				</div>
+				<ul class="waf_tips_list mtl0 c7" style="font-size: 13px;margin:60px 30px 15px 20px;">
+					<li>继承: 全局设置将在站点配置中自动继承为默认值</li>
+					<li>优先级:  IP白名单&gt; IP黑名单 &gt; UA白名单&gt; UA黑名单&gt; URL关键词拦截 &gt; URL白名单 &gt; URL黑名单 &gt; 禁止境外&gt; 禁止国内&gt; &gt; 非浏览器拦截&gt; User-Agent &gt;   CC防御 &gt;  Cookie &gt;  URI过滤 &gt;  URL参数 &gt; Thinkphp防御&gt;  POST &gt; 网站自定义防御</li>
+				</ul>
+			</div>
+		</script>
+		<script type="text/html" id="site" >
+			<div class="ng-item-box col-md-12"  data-type="site"><div class="ng-waf-line" style="text-align:left"><button class="btn btn-success btn-sm clear_log">日志清理</button></div>
+			<div class="divtable  waf_table" id="site_table" style="border:0;margin-bottom: 30pxoverflow: unset;"></div>
+			<ul class="help-info-text c7"  style="font-size: 13px;margin:15px 30px 15px 10px;">
+				<li >CDN选项：当网站开启CDN之后，一定得开启CDN按钮。不然会拦截CDN的节点IP，如需了解详请查看教程<a href="https://www.bt.cn/bbs/thread-67104-1-1.html" target="_blank" class="btlink"> &gt;查看教程</a></li>
+			</ul>
+			</div>
+		</script>
+		<script type="text/html" id="webshell">
+			<div class="ng-item-box col-md-12"  data-type="webshell">
+				<div class="waf_nav_group" >
+					<span class="active">查杀</span>
+					<span>规则列表</span>
+					<span>日志</span>
+				</div>
+				<div class="waf_nav_content">
+					<div class="active waf_nav_item" data-type="killing">
+						<div class="waf_nav_header">
+							<select class="bt-input-text mr5" style="width:120px" name="dir_path">
+								<option value="0" selected="">站点目录</option>
+								<option value="1">自定义目录</option>
+							</select>
+							<div class="input_list_one" style="display: inline-block;">
+								<select class="bt-input-text mr5" style="width:180px" name="static_site_list"></select>
+							</div>
+							<div class="input_list_two" style="display: none;">
+								<input type="text" class="bt-input-text mr5" id="san_path" style="width:250px">
+								<span data-id="path" class="glyphicon cursor ml5 glyphicon-folder-open"></span>
+							</div>
+							<button class="btn btn-success btn-sm va0" id="san_webshell_event">扫描木马</button>
+						</div>
+						<div class="waf_nav_body">
+							<div class="divtable" id="scan_webshell_table"></div>
+						</div>
+						<ul class="help-info-text c7"  style="font-size: 13px;margin:15px 30px 15px 0px;">
+							<li style="color:red">当前扫描内容为疑似木马文件，扫描方式基于当前规则库，可自行添加扫描规则</li>
+							<li style="color:red">建议宝塔监测和第三方监测都监测一下,如有一方监测为webshell建议立即删除此文件</li>
+							<li style="color:red">标记文件，可排除该文件</li>
+						</ul>
+					</div>
+					<div class="waf_nav_item" data-type="rule_list">
+						<button class="btn btn-success btn-sm add_webshell_rule" type="button" style="margin-bottom:15px">添加规则</button>
+						<div class="divtable" id="webshell_rule_table" style="margin-bottom:30px"></div>
+					</div>
+					<div class="waf_nav_item" data-type="logs">
+						<textarea class="webshell_logs" readonly="readonly"></textarea>
+					</div>
+				</div>
+			</div>
+		</script>
+		<script type="text/html" id="history">
+			<div class="ng-item-box col-md-12"  data-type="history">
+				<div class="ng-waf-line" style="text-align: left;">	
+					<button class="btn btn-success btn-sm uncover_all" type="button">解封所有</button>
+					<button class="btn btn-default btn-sm a_key_block" type="button">一键拉黑</button>
+					<button class="btn btn-default btn-sm export_block_list" type="button">导出封锁IP</button>
+					<button class="btn btn-default btn-sm clear_log" style="float: right;">日志清理</button>
+				</div>
+				<div class="divtable" id="history_table"></div>
+				<div class="history_uncover_page waf_page" style="display: inline-block;"></div>
+				<ul class="waf_tips_list mtl0 c7" style="font-size: 13px;margin:20px 30px 15px 20px;">
+					<li>一键拉黑：将正在封锁中的所有IP拉入IP黑名单中【如需查询IP黑名单的列表.请在全局设置中打开IP黑名单】</li>
+				</ul>
+			</div>
+		</script>
+		<script type="text/html" id="logs">
+			<div class="ng-item-box col-md-12"  data-type="logs">
+				<div class="divtable" id="logs_table" style="margin-top:15px"></div>
+			</div>
+		</script>
+		<script type="text/html" id="ng_waf_map">
+			<div class="col-md-12 ng-waf-content" style="height:100%;">
+				<div class="clearfix">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">攻击地图详情 (地图仅供参考)&nbsp;&nbsp;&nbsp;&nbsp;    
+						    <div class="ng-center">
+						        <span class="ng-mycenter"></span>
+						        <a target="_blank" class="btlink set_longitude_and_latitude">&nbsp;设置</a>
+						     </div>
+							<div class="ng-minsize" title="恢复窗口" data-type="home">
+							    <div class='ng-pic'></div>
+							    <p>恢复窗口</p>
+							</div>
+							<div class="ng-window"  title="全屏" data-type="home">
+							     <div class='ng-pic'></div>
+							    <p>全屏显示</p>
+							</div>
+						</div>
+						<div class="ng-waf-info-map" >
+							<div id="map" style="width:100%;height:100%"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="arc-loading">
+        		<div class="arc">
+        		</div>
+        		<h1><span>加载中,请稍候</span></h1>
+        	</div>
+		</script>
+		<script type="text/html" id="ng_waf_data_report">
+			<div class="col-xs-12 col-sm-12 col-md-3 ng-waf-content ng-waf-pie-border" style='height:400px'>
+				<div class="pr8">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">保护类型<p style="display:inline-block;color:red">&nbsp&nbsp(只取前10万条数据)&nbsp&nbsp</p></div>
+						<div class="ng-waf-info ng_protect_type" id="ng_protect_type" style='height:340px'></div>
+				    </div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-9 ng-waf-content ng-waf-report-border" style='height:407px'>
+				<div class="bgw ng-border" style="height:800px">
+					<div class="title c6 f13 plr15 ng-second-head">
+					    <span class="active">IP报表</span><span>URI报表</span><span>拦截搜索</span>
+					 </div>
+					<div class="ng-waf-info col-md-12" style='height: 712px;'>
+					    <div class="divtable ng_protect_table ng-fixed"  style='margin:15px 23px 15px 15px'></div>
+					    <div class="divtable ng_protect_table" id="ng_protect_table" style='margin:15px 0px;overflow:auto;height:688px'>
+				        	<table class="table table-hover">
+								<thead>
+									<tr>
+										<th width="25%">攻击IP</th>
+										<th width="8%">攻击次数</th>
+										<th width="25%">攻击占比</th>
+										<th style="text-align:right" width="10%">操作</th>
+									</tr>
+								</thead>
+								<tbody id='protectTableBody'></tbody>
+							</table>
+					    </div>
+					    <div class="ng_protect_search" style="padding:15px;display:none">
+					        <div class="clearfix protect_input"  style="display:inline-block">
+                                <span class="server_span c4 pull-left f14 text-right mr20">被攻击站点:</span>
+                                <div class="dropdown server_name pull-left mr20">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="server_name" data-toggle="dropdown" style="width:auto" aria-expanded="true">
+                                        <b value="all">所有站点</b>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="server_name"></ul>
+                                </div>
+                            </div>
+					        <div class="clearfix protect_input" style="display:inline-block;vertical-align: top;">
+                                <span class="server_span c4 pull-left f14 text-right mr20">搜索类型:</span>
+                                <div class="dropdown server_type pull-left mr20">
+                                    <button class="btn btn-default dropdown-toggle" type="button" id="server_type" data-toggle="dropdown" style="width:auto" aria-expanded="true">
+                                        <b value="1">IP</b>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" aria-labelledby="server_type">
+                                        <li><a role="menuitem" tabindex="-1" href="javascript:;" value="1">IP</a></li>
+                                        <li><a role="menuitem" tabindex="-1" href="javascript:;" value="2">URI</a></li>
+                                        <li><a role="menuitem" tabindex="-1" href="javascript:;" value="3">URL</a></li>
+                                        <li><a role="menuitem" tabindex="-1" href="javascript:;" value="time">时间搜索</a></li>
+                                    </ul>
+                                </div>
+                                <span class="planSign"><i>*</i>说明:如果当前拦截信息为/111.php?uid=1，则URi为/111.php，URL为/111.php?uid=1<a href="https://www.bt.cn/bbs/thread-69834-1-1.html" target="_blank" class="btlink"> &gt;查看教程</a></span>
+                            </div>
+                            <div class="clearfix protect_input search_time" style="display:none">
+                                <span class="server_span c4 pull-left f14 text-right mr20">自定义时间:</span>
+                                <div class=" pull-left"><input type="text" id="search_time" placeholder="自定义时间" class="bt-input-text"  lay-key="100001"></div>
+                            </div>
+                            <div class="clearfix protect_input search_data">
+                                <span class="server_span c4 pull-left f14 text-right mr20">搜索内容:</span>
+                                <div id="implement" style="line-height:34px"><textarea class="bt-input-text" id="search_data" style="margin: 0px; width: 445px; height: 80px;line-height: 16px;"></textarea></div>
+                            </div>
+                            <div class="clearfix protect_input">
+                                <button class="btn btn-success btn-sm report_search" style="margin-left:120px;font-size:14px" type="button">点击查询</button>
+                            </div>
+                            <div class="divtable  ng_search_table" id="ng_search_table" style="margin:25px 0px 10px 0px;display:none;height:371px;overflow:auto">
+    				        	<table class="table table-hover">
+    								<thead>
+    									<tr>
+    										<th width="150px">攻击时间</th>\
+    										<th width="100px">攻击IP</th>\
+    										<th width="100px">被保护网站</th>\
+    										<th width="200px">URI</th>\
+    										<th width="100px">保护类型</th>\
+    										<th width="100px" style="text-align:right" width="10%">操作</th>\
+    									</tr>
+    								</thead>
+    								<tbody id='searchTableBody'></tbody>
+    							</table>
+    					    </div>
+    					    <div class="page" id="searchTablePage"></div>
+					    </div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-3 ng-waf-content ng-waf-site-border" style='margin:0;height:400px'>
+				<div class="pr8">
+					<div class="bgw ng-border">
+						<div class="title c6 f13 plr15">攻击IP排行榜</div>
+						<div class="ng-waf-info"  style='height:340px;overall:auto'>
+						    <div class="ng_report_number" id="ng_report_number" style='width:100%;min-height:340px'>
+						        <div class="divtable ng-table" style="height:320px;background-color:#ffffff;border:0;padding:10px;text-align:center" >
+                        			<table class="table table-hover">
+                        				<tbody id="ip_list_body">
+                        				</tbody>
+                        			</table>
+                        		</div>
+						    </div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="/btwaf/static/js/echarts.min.js?version={{g['btwaf_version']}}"></script>
+<script src="/btwaf/static/js/world_fix.js?version={{g['btwaf_version']}}"></script>
+<script src="/btwaf/static/js/btwaftools.js?version={{g['btwaf_version']}}&id=1"></script>
+<script src="/btwaf/static/js/baiduMap.js?version={{g['btwaf_version']}}"></script>
+<script src="/btwaf/static/js/btwaf.js?version={{g['btwaf_version']}}&id=2"></script>
+<script src="/btwaf/static/js/geoCoordMap.js?version={{g['btwaf_version']}}"></script>
+<script src="{{g.cdn_url}}/laydate/laydate.js?version={{g['version']}}&repair={{data['js_random']}}"></script>
+<script src="{{g.cdn_url}}/codemirror/lib/codemirror.js?version={{g['version']}}&repair={{data['js_random']}}"></script>
+<script src="{{g.cdn_url}}/js/clipboard.min.js?version={{g['version']}}&repair={{data['js_random']}}" ></script>
+<script>
+    var dojoConfig = {
+		    parseOnLoad: true,
+		    packages: [{
+		        name: "src",
+		        location: location.pathname.replace(/\/[^/]+$/, "") + "/static/src"
+		    },{
+				name: "esri",
+				location: location.pathname.replace(/\/[^/]+$/, "") + "/static/esri"
+			},{
+				name: "moment",
+				location: location.pathname.replace(/\/[^/]+$/, "") + "/static/moment"
+			},{
+				name: "dojo",
+				location: location.pathname.replace(/\/[^/]+$/, "") + "/static/dojo"
+			}]
+		};
+</script>
+<script src="/btwaf/static/dojo/dojo.js?version={{g['btwaf_version']}}"></script>
+<script src="/btwaf/static/js/geoCoordMap.js?version={{g['btwaf_version']}}"></script>
+{% endblock %}
